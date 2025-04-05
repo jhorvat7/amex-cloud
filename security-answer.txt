@@ -1,8 +1,20 @@
 (Answer for multi-account communicaton below):
 
-For communication between EKS applications across AWS accounts in the same organization I could use VPC peering or AWS PrivateLink to enable private network access. Those are viable and secure routes, but have bigger startup infrastructure costs to make work and more complexity. I’d probably go with a strictly IAM approach if we're just going with one app communicating with another app to start off before investing in bigger, more powerful communication methods (that already may have heavy SCP restrictions from the organization level). The app in one account can assume a role in the other using sts:AssumeRole restricted by organization ID which should keep access tightly controlled with IAM policies and avoids exposing network paths altogether. It’s a light and secure way to enable cross account access using identity rather than networking and can very easily be leveraged directly into the infrastructure as code setup we may be looking to use in a full CI/CD setup.
+For communication between EKS applications across AWS accounts in the same organization I could use VPC peering or AWS PrivateLink
+to enable private network access. Those are viable and secure routes, but have bigger startup infrastructure costs to make work and 
+more complexity. I’d probably go with a strictly IAM approach if we're just going with one app communicating with another app to start 
+off before investing in bigger, more powerful communication methods (that already may have heavy SCP restrictions from the organization level). 
+The app in one account can assume a role in the other using sts:AssumeRole restricted by organization ID which should keep access 
+tightly controlled with IAM policies and avoids exposing network paths altogether. It’s a light and secure way to enable cross account 
+access using identity rather than networking and can very easily be leveraged directly into the infrastructure as code setup we may be 
+looking to use in a full CI/CD setup.
 
 
 (Answer for VPC and SG design choices below):
 
-I used the official AWS VPC module to create a simple and secure network with two private and two public subnets spread across AZs for high availability. NAT Gateway and DNS hostnames are enabled to support private outbound traffic to get outside services such as pulling Docker Hub images. Security groups are managed implicitly by the EKS module for best easy-setup practices. The cluster is deployed entirely into private subnets which is limiting inbound exposure. The httpbin service is exposed using a Kubernetes LoadBalancer service and that creates an internet facing ALB that lets the user go to this url to access the running pod image: http://a39628b5472884a8888b317a1d04afe0-546242512.us-east-1.elb.amazonaws.com/#/Dynamic_data  
+I used the official AWS VPC module to create a simple and secure network with two private and two public subnets spread across AZs 
+for high availability. NAT Gateway and DNS hostnames are enabled to support private outbound traffic to get outside services such 
+as pulling Docker Hub images. Security groups are managed implicitly by the EKS module for best easy-setup practices. The cluster 
+is deployed entirely into private subnets which is limiting inbound exposure. The httpbin service is exposed using a Kubernetes 
+LoadBalancer service and that creates an internet facing ALB that lets the user go to this url to access the running pod image:
+http://a39628b5472884a8888b317a1d04afe0-546242512.us-east-1.elb.amazonaws.com/#/Dynamic_data  
