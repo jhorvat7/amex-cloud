@@ -1,0 +1,25 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "AllowS3ReadAccess",
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject"
+        ],
+        "Resource": "arn:aws:s3:::amex-test-sample-bucket-name-4283225d/*"
+      }, 
+      {
+        "Sid": "AllowECRPull",
+        "Effect": "Allow",
+        "Action": [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
+        ],
+        "Resource": "arn:aws:ecr:us-east-1:123456789012:repository/example-repo"
+      }
+    ]
+  }
+  
